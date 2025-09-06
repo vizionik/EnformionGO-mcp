@@ -74,7 +74,7 @@ class PersonSearchRequest(BaseModel):
 
     class Config:
         """Pydantic config to allow population by alias."""
-        allow_population_by_field_name = True
+        populate_by_name = True
         
 class ContactEnrichmentAddress(BaseModel):
     """Represents an address specifically for Contact Enrichment."""
@@ -94,7 +94,7 @@ class ContactEnrichmentRequest(BaseModel):
 
     class Config:
         """Pydantic config to allow population by alias."""
-        allow_population_by_field_name = True
+        populate_by_name = True
 
 def validate_contact_enrichment_request(request: ContactEnrichmentRequest):
     """Dependency to validate that at least two search criteria are provided."""
@@ -124,28 +124,28 @@ class ReversePhoneSearchRequest(BaseModel):
 
     class Config:
         """Pydantic config to allow population by alias."""
-        allow_population_by_field_name = True
+        populate_by_name = True
 
 class CallerIdRequest(BaseModel):
     """Defines the request body for the Caller ID API."""
     phone: str = Field(..., alias="Phone")
 
     class Config:
-        allow_population_by_field_name = True
+        populate_by_name = True
 
 class EmailIdRequest(BaseModel):
     """Defines the request body for the Email ID API."""
     email: str = Field(..., alias="Email")
 
     class Config:
-        allow_population_by_field_name = True
+        populate_by_name = True
 
 class ContactIdRequest(BaseModel):
     """Defines the request body for the Contact ID API."""
     person_id: str = Field(..., alias="PersonId")
 
     class Config:
-        allow_population_by_field_name = True
+        populate_by_name = True
 
 class AddressIdRequest(BaseModel):
     """Defines the request body for the Address ID API."""
@@ -154,14 +154,14 @@ class AddressIdRequest(BaseModel):
     exact_match: Optional[str] = Field(None, alias="ExactMatch", description="Can be 'CurrentOwner' or 'CurrentResident'.")
 
     class Config:
-        allow_population_by_field_name = True
+        populate_by_name = True
 
 class AddressAutoCompleteRequest(BaseModel):
     """Defines the request body for the Address AutoComplete API."""
     input_str: str = Field(..., alias="Input")
 
     class Config:
-        allow_population_by_field_name = True
+        populate_by_name = True
 
 class IdVerificationRequest(BaseModel):
     """Defines the request body for the ID Verification API."""
@@ -177,7 +177,7 @@ class IdVerificationRequest(BaseModel):
     ssn: Optional[str] = Field(None, alias="Ssn")
 
     class Config:
-        allow_population_by_field_name = True
+        populate_by_name = True
 
 def validate_id_verification_request(request: IdVerificationRequest):
     """Dependency to validate that at least two ID verification criteria are provided."""
@@ -218,7 +218,7 @@ class CensusSearchRequest(BaseModel):
     census_decades: Optional[List[int]] = Field(None, alias="CensusDecades")
 
     class Config:
-        allow_population_by_field_name = True
+        populate_by_name = True
 
 class DivorceSearchRequest(BaseModel):
     """Defines the request body for the Divorce Search API."""
@@ -241,14 +241,14 @@ class DivorceSearchRequest(BaseModel):
     ssn: Optional[str] = Field(None, alias="SSN")
     
     class Config:
-        allow_population_by_field_name = True
+        populate_by_name = True
 
 class LinkedInIdRequest(BaseModel):
     """Defines the request body for the LinkedIn ID API."""
     profile_url: str = Field(..., alias="profileURL")
 
     class Config:
-        allow_population_by_field_name = True
+        populate_by_name = True
 
 class BusinessSearchRequest(BaseModel):
     """Defines the request body for the Business Search API."""
@@ -269,7 +269,7 @@ class BusinessSearchRequest(BaseModel):
     results_per_page: Optional[int] = Field(None, alias="ResultsPerPage")
 
     class Config:
-        allow_population_by_field_name = True
+        populate_by_name = True
 
 
 # --- API Helper Function ---
@@ -327,37 +327,37 @@ async def contact_enrichment(
     search_request: ContactEnrichmentRequest = Depends(validate_contact_enrichment_request)
 ):
     """Performs a contact enrichment search. Requires at least two criteria."""
-    request_body = search_request.dict(by_alias=True, exclude_none=True)
+    request_body = search_request.model_dump(by_alias=True, exclude_none=True)
     return await call_enformion_api(CONTACT_ENRICHMENT_API_URL, "DevAPIContactEnrich", request_body)
 
 @app.post("/caller-id", tags=["Dev APIs (Single Result)"])
 async def caller_id(search_request: CallerIdRequest):
     """Retrieves information associated with a provided phone number."""
-    request_body = search_request.dict(by_alias=True, exclude_none=True)
+    request_body = search_request.model_dump(by_alias=True, exclude_none=True)
     return await call_enformion_api(CALLER_ID_API_URL, "DevAPICallerID", request_body)
 
 @app.post("/email-id", tags=["Dev APIs (Single Result)"])
 async def email_id(search_request: EmailIdRequest):
     """Retrieves information associated with a provided email address."""
-    request_body = search_request.dict(by_alias=True, exclude_none=True)
+    request_body = search_request.model_dump(by_alias=True, exclude_none=True)
     return await call_enformion_api(EMAIL_ID_API_URL, "DevAPIEmailID", request_body)
 
 @app.post("/contact-id", tags=["Dev APIs (Single Result)"])
 async def contact_id(search_request: ContactIdRequest):
     """Searches for contact information using a unique person ID."""
-    request_body = search_request.dict(by_alias=True, exclude_none=True)
+    request_body = search_request.model_dump(by_alias=True, exclude_none=True)
     return await call_enformion_api(CONTACT_ID_API_URL, "DevAPIContactID", request_body)
 
 @app.post("/address-id", tags=["Dev APIs (Single Result)"])
 async def address_id(search_request: AddressIdRequest):
     """Finds contact info for current owners or residents of a property."""
-    request_body = search_request.dict(by_alias=True, exclude_none=True)
+    request_body = search_request.model_dump(by_alias=True, exclude_none=True)
     return await call_enformion_api(ADDRESS_ID_API_URL, "DevAPIAddressID", request_body)
 
 @app.post("/address-autocomplete", tags=["Dev APIs (Single Result)"])
 async def address_autocomplete(search_request: AddressAutoCompleteRequest):
     """Provides address autocomplete functionality."""
-    request_body = search_request.dict(by_alias=True, exclude_none=True)
+    request_body = search_request.model_dump(by_alias=True, exclude_none=True)
     return await call_enformion_api(ADDRESS_AUTOCOMPLETE_API_URL, "DevAPIAddressAutoComplete", request_body)
 
 # --- People Data Endpoints ---
@@ -367,13 +367,13 @@ async def person_search(
     galaxy_search_type: str = Header("Person", description="Search type (e.g., 'Person', 'Teaser')."),
 ):
     """Performs a person search by proxying the request to the EnformionGO API."""
-    request_body = search_request.dict(by_alias=True, exclude_none=True)
+    request_body = search_request.model_dump(by_alias=True, exclude_none=True)
     return await call_enformion_api(PERSON_SEARCH_API_URL, galaxy_search_type, request_body)
 
 @app.post("/reverse-phone-search", tags=["People Data"])
 async def reverse_phone_search(search_request: ReversePhoneSearchRequest):
     """Performs a reverse phone search by proxying the request to the EnformionGO API."""
-    request_body = search_request.dict(by_alias=True, exclude_none=True)
+    request_body = search_request.model_dump(by_alias=True, exclude_none=True)
     return await call_enformion_api(REVERSE_PHONE_API_URL, "ReversePhone", request_body)
 
 @app.post("/id-verification", tags=["People Data"])
@@ -381,13 +381,13 @@ async def id_verification(
     search_request: IdVerificationRequest = Depends(validate_id_verification_request)
 ):
     """Provides an identity score and verification flag. Requires at least two criteria."""
-    request_body = search_request.dict(by_alias=True, exclude_none=True)
+    request_body = search_request.model_dump(by_alias=True, exclude_none=True)
     return await call_enformion_api(ID_VERIFICATION_API_URL, "DevAPIIDVerification", request_body)
 
 @app.post("/census-search", tags=["People Data"])
 async def census_search(search_request: CensusSearchRequest):
     """Searches historical population data."""
-    request_body = search_request.dict(by_alias=True, exclude_none=True)
+    request_body = search_request.model_dump(by_alias=True, exclude_none=True)
     if (request_body.get("Addresses", {}).get("City") or request_body.get("Addresses", {}).get("County")) and not request_body.get("Addresses", {}).get("State"):
         raise HTTPException(status_code=400, detail="State is required if City or County is provided.")
     return await call_enformion_api(CENSUS_SEARCH_API_URL, "Census", request_body)
@@ -395,7 +395,7 @@ async def census_search(search_request: CensusSearchRequest):
 @app.post("/divorce-search", tags=["People Data"])
 async def divorce_search(search_request: DivorceSearchRequest):
     """Searches for divorce records."""
-    request_body = search_request.dict(by_alias=True, exclude_none=True)
+    request_body = search_request.model_dump(by_alias=True, exclude_none=True)
     if request_body.get("City") and not request_body.get("State"):
         raise HTTPException(status_code=400, detail="State is required when City is provided.")
     return await call_enformion_api(DIVORCE_SEARCH_API_URL, "Divorce", request_body)
@@ -403,7 +403,7 @@ async def divorce_search(search_request: DivorceSearchRequest):
 @app.post("/linkedin-id", tags=["People Data"])
 async def linkedin_id(search_request: LinkedInIdRequest):
     """Searches by a LinkedIn profile URL."""
-    request_body = search_request.dict(by_alias=True, exclude_none=True)
+    request_body = search_request.model_dump(by_alias=True, exclude_none=True)
     return await call_enformion_api(LINKEDIN_ID_API_URL, "LinkedinID", request_body)
 
 # --- Property Data Endpoints ---
@@ -424,7 +424,7 @@ async def business_search(search_request: BusinessSearchRequest):
     """
     Searches for business data using various criteria.
     """
-    request_body = search_request.dict(by_alias=True, exclude_none=True)
+    request_body = search_request.model_dump(by_alias=True, exclude_none=True)
     return await call_enformion_api(BUSINESS_SEARCH_V2_API_URL, "BusinessV2", request_body)
 
 @app.post("/domain-search", tags=["Business Data"])
@@ -466,4 +466,3 @@ mcp.setup_server()
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="127.0.0.1", port=8000)
-
