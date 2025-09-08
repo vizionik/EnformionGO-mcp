@@ -1,5 +1,5 @@
-# Use a slim Python base image
-FROM python:3.13-slim AS builder
+# --- Build Stage ---
+FROM python:3.13-slim-bookworm AS builder
 
 # Set working directory
 WORKDIR /app
@@ -11,27 +11,34 @@ RUN pip install uv
 COPY pyproject.toml uv.lock ./
 
 # Install dependencies
-RUN /bin/bash -c "uv pip install --system -r <(uv pip compile pyproject.toml --output-file=-)"
+RUN uv sync
+
+# Copy application files
+COPY . .
 
 # --- Final Stage ---
-FROM python:3.13-slim
+FROM python:3.13-slim-bookworm
 
 # Set working directory
 WORKDIR /app
 
 # Create a non-root user
-RUN useradd -m appuser
-USER appuser
+RUN useradd --create-home appuser
 
 # Copy installed dependencies from builder stage
-COPY --from=builder /usr/local/lib/python3.13/site-packages /usr/local/lib/python3.13/site-packages
-COPY --from=builder /usr/local/bin /usr/local/bin
+COPY --from=builder /app /app
 
-# Copy the application code
-COPY main.py .
+# Add the venv to the PATH
+ENV PATH="/app/.venv/bin:$PATH"
+
+# Change ownership of the app directory
+RUN chown -R appuser:appuser /app
+
+# Switch to the non-root user
+USER appuser
 
 # Expose the port the app runs on
 EXPOSE 8000
 
-# Command to run the application
-CMD ["gunicorn", "-w", "4", "-k", "uvicorn.workers.UvicornWorker", "-b", "0.0.0.0:8000", "main:app"]
+# Run the application
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]

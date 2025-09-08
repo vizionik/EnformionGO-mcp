@@ -11,3 +11,9 @@ wheels/
 
 # Environment variables
 .env
+.gemini/
+gha-creds-*.json
+
+# Misc.
+.pytest_cache/
+GEMINI.md

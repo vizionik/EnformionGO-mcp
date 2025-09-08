@@ -41,57 +41,61 @@ It also features:
 *   **Basic Error Handling:** The API returns basic HTTP exceptions with details from the upstream API or the HTTP client.
 *   **Undefined Schemas:** Some newer endpoints (`property-search-v2`, `domain-search`, `business-id`) do not have Pydantic models defined and accept a generic JSON body.
 
-## Setup and Running
+## Quickstart Guide
 
-This application can be run either using Docker (recommended) or directly on your local machine for development. In both cases, you first need to create an environment file.
+This guide will help you get the EnformionGO API wrapper up and running. You can either use Docker (recommended for production) or run it locally for development.
 
-1.  **Create Environment File:**
+### Prerequisites
 
-    Create a `.env` file in the root of the project with your EnformionGO API credentials:
-    ```
-    GALAXY_AP_NAME=your_api_name
-    GALAXY_AP_PASSWORD=your_api_password
-    ```
+*   Python 3.13+
+*   `uv` for dependency management (if running locally)
+*   Docker (if using Docker)
+*   EnformionGO API credentials
 
-### Running with Docker (Recommended)
+### 1. Configure Credentials
 
-The `Dockerfile` included in the project provides a production-ready environment using `gunicorn`. This is the simplest and recommended way to run the application.
+Create a `.env` file in the root of the project and add your EnformionGO API credentials:
 
-1.  **Prerequisites:**
-    *   Ensure you have Docker installed on your system.
+```
+GALAXY_AP_NAME=your_api_name
+GALAXY_AP_PASSWORD=your_api_password
+```
 
-2.  **Build and Run the Docker Container:**
-    From the root of the project, run the following commands:
+### 2. Run the Application
 
+You have two options for running the application:
+
+#### Docker (Recommended)
+
+This is the recommended method for a stable deployment.
+
+1.  **Build the Docker image:**
     ```bash
-    # Build the Docker image
     docker build -t enformiongo .
-
-    # Run the container, passing the .env file for credentials
+    ```
+2.  **Run the container:**
+    ```bash
     docker run -p 8000:8000 --env-file .env enformiongo
     ```
 
-    The application will be accessible at `http://localhost:8000`.
+#### Local Development
 
-### Running Locally for Development
+This method is ideal for development and testing.
 
-For development purposes, you can run the application directly on your machine. You will need Python 3.13+ and `uv` for dependency management.
-
-1.  **Install `uv`:**
-    If you don't have `uv`, install it via `pip` or your preferred method:
-    ```bash
-    pip install uv
-    ```
-2.  **Install Dependencies:**
-    Sync the dependencies from the `uv.lock` file:
+1.  **Install dependencies:**
     ```bash
     uv pip sync
     ```
-3.  **Run the Application:**
-    You can run the application with `uvicorn` which provides live reloading, ideal for development:
+2.  **Run the server with auto-reload:**
     ```bash
     uvicorn main:app --reload
     ```
+
+### 3. Access the API
+
+The application will be accessible at `http://localhost:8000`.
+
+You can view the interactive API documentation (Swagger UI) at `http://localhost:8000/docs`.
 
 ## Usage
 
